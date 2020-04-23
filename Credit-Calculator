@@ -1,0 +1,57 @@
+import sys
+import math
+args = sys.argv
+args_list = []
+for i in args:
+    args_list.append(i.split("=")[0])
+if len(args_list) == 5:
+    if args[1].split("=")[1] == "diff":
+        if "--principal" in args_list and "--periods" in args_list and "--interest" in args_list:
+            principal = float(args[args_list.index("--principal")].split("=")[1])
+            periods = float(args[args_list.index("--periods")].split("=")[1])
+            interest = float(args[args_list.index("--interest")].split("=")[1])
+            i = interest / 12 / 100
+            count = 1
+            sum = 0
+            while count <= periods:
+                d = math.ceil((principal / periods) + i * (principal - (principal * (count - 1) / periods)))
+                print("Month {}: paid out {}".format(count, d))
+                count += 1
+                sum += d
+            overpayment = sum - principal
+            print("Overpayment = {}".format(overpayment))
+        else:
+            print("Incorrect parameters")
+    elif args[1].split("=")[1] == "annuity":
+        if "--principal" in args_list and "--periods" in args_list:
+            principal = float(args[args_list.index("--principal")].split("=")[1])
+            periods = float(args[args_list.index("--periods")].split("=")[1])
+            interest = float(args[args_list.index("--interest")].split("=")[1])
+            i = interest / 12 / 100
+            annuity_payment = math.ceil(principal * ((i * math.pow(1 + i, periods)) / (math.pow(1 + i, periods) - 1)))
+            print("Your annuity payment = {}!".format(annuity_payment))
+            overpayment = (annuity_payment * periods) - principal
+            print("Overpayment = {}".format(overpayment))
+        elif "--principal" in args_list and "--payment" in args_list:
+            principal = float(args[args_list.index("--principal")].split("=")[1])
+            payment = float(args[args_list.index("--payment")].split("=")[1])
+            interest = float(args[args_list.index("--interest")].split("=")[1])
+            i = interest / 12 / 100
+            count_of_month = math.ceil(math.log((payment / (payment - (i * principal))), i + 1))
+            if count_of_month >= 12:
+                years = count_of_month // 12
+                months = count_of_month % 12
+            print("You need {} years and {} months to repay this credit!".format(years, months))
+            overpayment = (payment * count_of_month) - principal
+            print("Overpayment = {}".format(overpayment))
+        elif "--periods" in args_list and "--payment" in args_list:
+            payment = float(args[args_list.index("--payment")].split("=")[1])
+            periods = float(args[args_list.index("--periods")].split("=")[1])
+            interest = float(args[args_list.index("--interest")].split("=")[1])
+            i = interest / 12 / 100
+            principal = round(payment / ((i * math.pow(1 + i, periods)) / (math.pow(1 + i, periods) - 1)))
+            print("Your credit principal = {}!".format(principal))
+            overpayment = (payment * periods) - principal
+            print("Overpayment = {}".format(overpayment))
+else:
+    print("Incorrect parameters")
